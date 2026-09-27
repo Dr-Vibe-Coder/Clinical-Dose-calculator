@@ -1,0 +1,896 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO Optimization for ClinicalDoseCalculator.com -->
+    <title>Clinical Dose Calculator | Peptide, IV Drip & Med Math Tool</title>
+    <meta name="description" content="Free clinical dose calculator for healthcare professionals. Accurately calculate peptide reconstitution, IV drip rates (gtt/min), weight-based dosing, and BSA.">
+    <meta name="keywords" content="clinical dose calculator, peptide calculator, peptide reconstitution calculator, IV drip rate calculator, gtt/min calculator, weight based dosing calculator, BSA calculator, nursing med math, clinical tools">
+    <meta name="author" content="ClinicalDoseCalculator.com">
+    <link rel="canonical" href="https://clinicaldosecalculator.com" />
+    
+    <!-- Open Graph / Social Sharing Tags -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://clinicaldosecalculator.com/">
+    <meta property="og:title" content="Clinical Dose Calculator | Peptide & Med Math Tool">
+    <meta property="og:description" content="Professional-grade calculators for peptide reconstitution, IV drip rates, and weight-based medical dosing.">
+    
+    <!-- Schema Markup for Google Rich Snippets -->
+    <script type="application/ld+json">
+    [
+        {
+          "@context": "https://schema.org",
+          "@type": "SoftwareApplication",
+          "name": "Clinical Dose Calculator",
+          "url": "https://clinicaldosecalculator.com",
+          "operatingSystem": "Any",
+          "applicationCategory": "HealthApplication",
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+          },
+          "description": "A suite of clinical calculators for nursing, pharmacy, and research professionals including peptide reconstitution with visual syringe guidance, IV drip rates, and weight-based dosing."
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "mainEntity": [{
+            "@type": "Question",
+            "name": "How do you calculate peptide reconstitution?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "To calculate peptide reconstitution, divide the total micrograms (mcg) of the peptide by the volume of bacteriostatic water added. This gives you the concentration per mL. Our calculator automates this and provides an interactive syringe guide for safety."
+            }
+          }, {
+            "@type": "Question",
+            "name": "What is the formula for IV drip rate (gtt/min)?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "The IV drip rate formula is: (Total Volume in mL × Drop Factor) / Total Time in Minutes = Drops per minute (gtt/min). Our IV drip calculator computes this instantly for macrodrip and microdrip tubing."
+            }
+          }, {
+            "@type": "Question",
+            "name": "Why is Body Surface Area (BSA) important in dosing?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "BSA provides a more accurate reflection of metabolic mass than body weight alone. It is universally used in oncology (chemotherapy dosing) and specialized pediatric pharmacology to reduce the risk of toxicity."
+            }
+          }]
+        }
+    ]
+    </script>
+
+    <!-- Tailwind CSS (via CDN for single-file deployment) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
+        .tab-active { border-bottom: 2px solid #2563eb; color: #2563eb; font-weight: 600; }
+        .tab-inactive { color: #6b7280; border-bottom: 2px solid transparent; }
+        .tab-inactive:hover { color: #374151; border-color: #d1d5db; }
+        .hide-scroll::-webkit-scrollbar { display: none; }
+        .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+        /* Smooth fade transition */
+        .fade-in { animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        /* Hide number input arrows */
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
+        
+        /* Typography for SEO Articles */
+        .prose h2 { font-size: 1.5rem; font-weight: 700; color: #111827; margin-top: 2rem; margin-bottom: 1rem; }
+        .prose h3 { font-size: 1.25rem; font-weight: 600; color: #1f2937; margin-top: 1.5rem; margin-bottom: 0.75rem; }
+        .prose p { margin-bottom: 1rem; color: #4b5563; line-height: 1.7; }
+        .prose ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 1rem; color: #4b5563; }
+        .prose li { margin-bottom: 0.5rem; }
+    </style>
+</head>
+<body class="text-gray-800 antialiased min-h-screen flex flex-col">
+
+    <!-- Navbar -->
+    <nav class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <button onclick="showPage('page-home')" class="flex items-center gap-2 outline-none focus:ring-2 focus:ring-blue-500 rounded">
+                    <div class="bg-blue-600 text-white p-2 rounded-lg">
+                        <i class="fa-solid fa-staff-snake text-lg sm:text-xl"></i>
+                    </div>
+                    <!-- Updated Heading to match full domain name -->
+                    <span class="font-bold text-lg sm:text-xl text-gray-900 tracking-tight flex flex-wrap">ClinicalDose<span class="text-blue-600">Calculator</span></span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Views Container -->
+    <main class="flex-grow max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+        
+        <!-- ========================================== -->
+        <!-- VIEW 1: HOME (CALCULATORS + SEO CONTENT)   -->
+        <!-- ========================================== -->
+        <div id="page-home" class="page-view block fade-in">
+
+            <!-- Application Area -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-6">
+                
+                <!-- Tabs Header (Optimized Order for Traffic) -->
+                <div class="flex overflow-x-auto border-b border-gray-200 bg-gray-50 hide-scroll">
+                    <!-- 1. Peptides & Recon (Highest Trend Traffic) -->
+                    <button onclick="switchTab('recon-tab')" id="btn-recon-tab" class="tab-active flex-none w-1/4 min-w-[120px] py-4 px-2 text-xs sm:text-sm font-medium text-center transition-colors flex flex-col items-center justify-center gap-1">
+                        <i class="fa-solid fa-syringe text-lg mb-1"></i> Peptides & Recon
+                    </button>
+                    <!-- 2. IV Drip (Massive Evergreen Student Traffic) -->
+                    <button onclick="switchTab('iv-tab')" id="btn-iv-tab" class="tab-inactive flex-none w-1/4 min-w-[120px] py-4 px-2 text-xs sm:text-sm font-medium text-center transition-colors flex flex-col items-center justify-center gap-1">
+                        <i class="fa-solid fa-droplet text-lg mb-1"></i> IV Drip
+                    </button>
+                    <!-- 3. Weight-Based (Standard Clinical) -->
+                    <button onclick="switchTab('weight-tab')" id="btn-weight-tab" class="tab-inactive flex-none w-1/4 min-w-[120px] py-4 px-2 text-xs sm:text-sm font-medium text-center transition-colors flex flex-col items-center justify-center gap-1">
+                        <i class="fa-solid fa-weight-scale text-lg mb-1"></i> Weight-Based
+                    </button>
+                    <!-- 4. BSA (Niche Clinical) -->
+                    <button onclick="switchTab('bsa-tab')" id="btn-bsa-tab" class="tab-inactive flex-none w-1/4 min-w-[120px] py-4 px-2 text-xs sm:text-sm font-medium text-center transition-colors flex flex-col items-center justify-center gap-1">
+                        <i class="fa-solid fa-ruler-combined text-lg mb-1"></i> BSA
+                    </button>
+                </div>
+
+                <!-- Tabs Content Container -->
+                <div class="p-4 sm:p-8">
+
+                    <!-- TAB 1: Peptide & Medication Reconstitution -->
+                    <div id="content-recon-tab" class="calc-tab block fade-in">
+                        <div class="flex items-center justify-between mb-6">
+                            <div class="flex items-center gap-3">
+                                <div class="bg-blue-100 text-blue-600 p-2 rounded-lg"><i class="fa-solid fa-vial"></i></div>
+                                <h2 class="text-xl font-bold text-gray-900">Peptide & Drug Reconstitution</h2>
+                            </div>
+                            <span class="hidden sm:inline-block bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-sm border border-blue-500">
+                                <i class="fa-solid fa-eye mr-1"></i> Visual Syringe Guide Active
+                            </span>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                            <div class="lg:col-span-5 space-y-5">
+                                <div class="grid grid-cols-3 gap-2">
+                                    <div class="col-span-2">
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Vial Amount</label>
+                                        <input type="number" id="recon-powder" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none transition" placeholder="e.g., 5" oninput="calculateRecon()">
+                                    </div>
+                                    <div class="col-span-1">
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">&nbsp;</label>
+                                        <select id="recon-powder-unit" class="w-full px-2 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 bg-white outline-none" onchange="calculateRecon()">
+                                            <option value="mg">mg</option>
+                                            <option value="mcg">mcg</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Bacteriostatic Water / Diluent (mL)</label>
+                                    <input type="number" id="recon-diluent" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none transition" placeholder="e.g., 2" oninput="calculateRecon()">
+                                </div>
+                                <div class="grid grid-cols-3 gap-2">
+                                    <div class="col-span-2">
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Desired Dose</label>
+                                        <input type="number" id="recon-dose" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none transition" placeholder="e.g., 250" oninput="calculateRecon()">
+                                    </div>
+                                    <div class="col-span-1">
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">&nbsp;</label>
+                                        <select id="recon-dose-unit" class="w-full px-2 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 bg-white outline-none" onchange="calculateRecon()">
+                                            <option value="mcg">mcg</option>
+                                            <option value="mg">mg</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Syringe Size</label>
+                                    <select id="recon-syringe" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 bg-white outline-none" onchange="calculateRecon()">
+                                        <option value="1">1 mL (100 Units) Insulin</option>
+                                        <option value="0.5">0.5 mL (50 Units) Insulin</option>
+                                        <option value="0.3">0.3 mL (30 Units) Insulin</option>
+                                        <option value="3">3 mL Standard</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="lg:col-span-7 flex flex-col gap-4">
+                                <div class="bg-blue-50 p-6 rounded-xl border border-blue-100 flex-1 flex flex-col justify-center items-center relative shadow-inner">
+                                    <p class="text-sm text-blue-800 font-bold mb-1 uppercase tracking-wide">Volume to Draw</p>
+                                    <div class="flex items-baseline gap-2">
+                                        <p class="text-5xl font-extrabold text-blue-900 tracking-tighter"><span id="recon-draw-result">0.00</span></p>
+                                        <p class="text-2xl font-bold text-blue-700">mL</p>
+                                    </div>
+                                    <p id="recon-units-result" class="text-lg font-semibold text-indigo-700 mt-1 bg-indigo-100 px-4 py-1 rounded-full border border-indigo-200 shadow-sm hidden">0 Units</p>
+                                    
+                                    <!-- Visual Syringe Component -->
+                                    <div class="w-full mt-8 bg-white/60 p-4 rounded-xl border border-blue-200/50 shadow-sm">
+                                        <div class="flex justify-between items-center mb-4">
+                                            <p class="text-xs font-bold text-gray-500 uppercase">Interactive Syringe Guide</p>
+                                            <p class="text-[10px] text-gray-400 bg-white px-2 py-0.5 rounded border border-gray-200" id="syringe-label-cap">1.0 mL Capacity</p>
+                                        </div>
+                                        
+                                        <!-- The Syringe Wrapper -->
+                                        <div class="relative w-full h-12 flex items-center">
+                                            <!-- Needle -->
+                                            <div class="w-8 h-1 bg-gray-300 rounded-l-full border-b border-gray-400 z-10 shrink-0"></div>
+                                            <!-- Hub -->
+                                            <div class="w-3 h-4 bg-blue-400 rounded-sm z-10 border border-blue-500 shadow-sm shrink-0"></div>
+                                            
+                                            <!-- Barrel Container -->
+                                            <div class="relative flex-grow h-10 border-[3px] border-gray-300 bg-white/90 rounded-r-md overflow-hidden flex shadow-inner">
+                                                <!-- Liquid Fill -->
+                                                <div id="syringe-liquid" class="h-full bg-gradient-to-r from-blue-400 to-blue-500 opacity-90 transition-all duration-700 ease-out absolute left-0 top-0 bottom-0 z-0" style="width: 0%;"></div>
+                                                
+                                                <!-- Graduation Marks (overlay) -->
+                                                <div class="absolute inset-0 flex justify-between z-10 px-[1px] pointer-events-none" id="syringe-marks">
+                                                    <!-- Generated via JS -->
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- Plunger Back -->
+                                            <div class="w-4 h-11 bg-gray-200 border-2 border-gray-300 rounded-r-lg shadow-sm z-10 flex items-center justify-center shrink-0">
+                                                <div class="w-1.5 h-7 bg-gray-400 rounded-full"></div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Exact Marker -->
+                                        <div class="w-full relative h-8 mt-1 flex pl-11 pr-4">
+                                            <div class="relative w-full">
+                                                <div id="syringe-marker" class="absolute top-0 flex flex-col items-center transition-all duration-700 ease-out z-20" style="left: 0%; transform: translateX(-50%);">
+                                                    <i class="fa-solid fa-caret-up text-blue-600 text-2xl -mt-2 drop-shadow-sm"></i>
+                                                    <span id="syringe-marker-text" class="text-[11px] font-bold text-white bg-blue-700 px-2 py-0.5 rounded shadow-md border border-blue-800 whitespace-nowrap">0 mL</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- End Visual Syringe -->
+                                </div>
+                                
+                                <!-- Smart Syringe Safety Check -->
+                                <div id="recon-safety-box" class="bg-gray-50 border border-gray-200 p-4 rounded-xl flex items-start gap-3 transition-colors duration-300 mt-2">
+                                    <div id="recon-safety-icon" class="text-gray-400 mt-0.5"><i class="fa-solid fa-circle-info"></i></div>
+                                    <div>
+                                        <p class="text-sm font-bold text-gray-800">Safety & Validation</p>
+                                        <p id="recon-safety-text" class="text-sm text-gray-600 mt-1">Enter values to validate your dose and syringe capacity.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 2: IV Drip Rate -->
+                    <div id="content-iv-tab" class="calc-tab hidden fade-in">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="bg-cyan-100 text-cyan-600 p-2 rounded-lg"><i class="fa-solid fa-droplet"></i></div>
+                            <h2 class="text-xl font-bold text-gray-900">IV Drip Rate Calculator</h2>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div class="space-y-5">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Total Volume (mL)</label>
+                                    <input type="number" id="iv-volume" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-cyan-500 outline-none transition" placeholder="e.g., 1000" oninput="calculateIV()">
+                                </div>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Time</label>
+                                        <input type="number" id="iv-time" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-cyan-500 outline-none transition" placeholder="e.g., 8" oninput="calculateIV()">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Unit</label>
+                                        <select id="iv-time-unit" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-cyan-500 bg-white outline-none" onchange="calculateIV()">
+                                            <option value="hours">Hours</option>
+                                            <option value="minutes">Minutes</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Drop Factor (gtt/mL)</label>
+                                    <select id="iv-drop-factor" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-cyan-500 bg-white outline-none" onchange="calculateIV()">
+                                        <option value="10">10 gtt/mL (Macrodrip)</option>
+                                        <option value="15">15 gtt/mL (Macrodrip)</option>
+                                        <option value="20">20 gtt/mL (Macrodrip)</option>
+                                        <option value="60">60 gtt/mL (Microdrip)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="flex flex-col justify-center">
+                                <div class="bg-cyan-50 p-8 rounded-xl border border-cyan-100 text-center h-full flex flex-col justify-center">
+                                    <p class="text-sm text-cyan-800 font-medium mb-2 uppercase tracking-wide">Flow Rate</p>
+                                    <p class="text-6xl font-bold text-cyan-900 mb-2"><span id="iv-result">0</span></p>
+                                    <p class="text-xl font-semibold text-cyan-700">drops/min (gtt/min)</p>
+                                    <p class="text-xs text-cyan-600 mt-4 font-medium">Formula: (Volume × Drop Factor) / Time in mins</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 3: Weight-Based Dosing -->
+                    <div id="content-weight-tab" class="calc-tab hidden fade-in">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="bg-emerald-100 text-emerald-600 p-2 rounded-lg"><i class="fa-solid fa-weight-scale"></i></div>
+                            <h2 class="text-xl font-bold text-gray-900">Weight-Based Dosing Calculator</h2>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div class="space-y-5">
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Patient Weight</label>
+                                        <input type="number" id="wb-weight" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-500 outline-none transition" placeholder="e.g., 25" oninput="calculateWeightBased()">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Unit</label>
+                                        <select id="wb-weight-unit" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-500 bg-white outline-none" onchange="calculateWeightBased()">
+                                            <option value="kg">Kilograms (kg)</option>
+                                            <option value="lbs">Pounds (lbs)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Dose per kg (mg/kg)</label>
+                                    <input type="number" id="wb-dose" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-500 outline-none transition" placeholder="e.g., 15" oninput="calculateWeightBased()">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Liquid Concentration (mg/mL) <span class="text-gray-400 font-normal italic">- Optional</span></label>
+                                    <input type="number" id="wb-concentration" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-500 outline-none transition" placeholder="e.g., 160" oninput="calculateWeightBased()">
+                                </div>
+                            </div>
+                            <div class="flex flex-col gap-4">
+                                <div class="bg-emerald-50 p-6 rounded-xl border border-emerald-100 text-center flex-1 flex flex-col justify-center">
+                                    <p class="text-sm text-emerald-800 font-medium mb-1 uppercase tracking-wide">Total Required Dose</p>
+                                    <p class="text-4xl font-bold text-emerald-900"><span id="wb-dose-result">0.00</span> <span class="text-xl font-semibold text-emerald-700">mg</span></p>
+                                </div>
+                                <div class="bg-purple-50 p-6 rounded-xl border border-purple-100 text-center flex-1 flex flex-col justify-center transition-all duration-300 relative overflow-hidden" id="wb-vol-container">
+                                    <p class="text-sm text-purple-800 font-medium mb-1 uppercase tracking-wide">Administer Volume</p>
+                                    <p class="text-4xl font-bold text-purple-900"><span id="wb-vol-result">-</span> <span class="text-xl font-semibold text-purple-700">mL</span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 4: BSA -->
+                    <div id="content-bsa-tab" class="calc-tab hidden fade-in">
+                        <div class="flex items-center gap-3 mb-2">
+                            <div class="bg-indigo-100 text-indigo-600 p-2 rounded-lg"><i class="fa-solid fa-ruler-combined"></i></div>
+                            <h2 class="text-xl font-bold text-gray-900">BSA Calculator</h2>
+                        </div>
+                        <p class="text-sm text-gray-500 mb-6">Utilizes the globally recognized Mosteller formula.</p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div class="space-y-5">
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Patient Height</label>
+                                        <input type="number" id="bsa-height" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 outline-none transition" placeholder="e.g., 170" oninput="calculateBSA()">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Unit</label>
+                                        <select id="bsa-height-unit" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 bg-white outline-none" onchange="calculateBSA()">
+                                            <option value="cm">Centimeters (cm)</option>
+                                            <option value="in">Inches (in)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Patient Weight</label>
+                                        <input type="number" id="bsa-weight" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 outline-none transition" placeholder="e.g., 70" oninput="calculateBSA()">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Unit</label>
+                                        <select id="bsa-weight-unit" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 bg-white outline-none" onchange="calculateBSA()">
+                                            <option value="kg">Kilograms (kg)</option>
+                                            <option value="lbs">Pounds (lbs)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex flex-col justify-center">
+                                <div class="bg-indigo-50 p-8 rounded-xl border border-indigo-100 text-center h-full flex flex-col justify-center">
+                                    <p class="text-sm text-indigo-800 font-medium mb-2 uppercase tracking-wide">Estimated BSA</p>
+                                    <p class="text-6xl font-bold text-indigo-900 mb-2"><span id="bsa-result">0.00</span></p>
+                                    <p class="text-xl font-semibold text-indigo-700">m&sup2;</p>
+                                    <p class="text-xs text-indigo-600 mt-4 font-medium">Formula: &radic;(Height(cm) × Weight(kg) / 3600)</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Medical Disclaimer Alert -->
+            <div class="bg-amber-50 border-l-4 border-amber-400 p-4 mb-12 rounded-r-md shadow-sm">
+                <div class="flex items-start">
+                    <div class="flex-shrink-0 mt-0.5">
+                        <i class="fa-solid fa-triangle-exclamation text-amber-400"></i>
+                    </div>
+                    <div class="ml-3">
+                        <h3 class="text-sm font-bold text-amber-800 uppercase tracking-wider mb-1">Medical Disclaimer</h3>
+                        <p class="text-sm text-amber-700">
+                            This clinical dose calculator is strictly for educational and reference purposes. It should not substitute professional medical judgment. Always manually verify clinical calculations and safety limits prior to administering any medication.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SEO Rich Text Content (Crucial for AdSense & Organic Search Ranking) -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8 mb-12 prose max-w-none">
+                <h1 class="text-3xl font-bold text-gray-900 mb-6">Comprehensive Clinical Dose Calculator & Med Math Guide</h1>
+                <p>Welcome to <strong>ClinicalDoseCalculator.com</strong>, a highly specialized medical math tool designed for precise clinical calculations. Whether you are measuring out sensitive peptide reconstitutions, calculating an intravenous (IV) drip rate (gtt/min), or determining weight-based pediatric dosages, mathematical accuracy is paramount for patient safety and drug efficacy. Our tools are meticulously designed for nursing students, clinical pharmacists, medical residents, and academic researchers.</p>
+
+                <h2>Peptide & Medication Reconstitution Calculator</h2>
+                <p>Many critical compounds, including modern peptides (like GLP-1s, BPC-157, and standard research compounds) as well as specialized medical injectables (such as certain antibiotics and biologics), are provided as lyophilized powders. These must be reconstituted using a specific diluent, most commonly bacteriostatic water or sterile saline. </p>
+                <p>Our <strong>Peptide Calculator</strong> determines exactly how much liquid to draw up based on your vial's total yield and your desired dose. Because peptides are often dosed in micrograms (mcg) but sold in milligram (mg) vials, our tool features integrated mg/mcg conversion toggles, preventing dangerous decimal errors.</p>
+                
+                <h3>The Importance of Visual Syringe Guidance</h3>
+                <p>Medication errors involving syringe selection are unfortunately common in high-stress clinical environments. To combat this, our built-in <strong>Interactive Visual Syringe Guide</strong> provides a crucial secondary safety check. As you calculate your required dose, the system maps the liquid volume directly onto a CSS-rendered visual syringe. It actively analyzes your selected syringe size (ranging from a 0.3mL insulin syringe up to a standard 3mL clinical syringe) and will flash a high-visibility warning if the calculated liquid volume exceeds the physical capacity of the syringe, preventing overdraws and potential contamination.</p>
+
+                <h2>IV Drip Rate (gtt/min) Calculator</h2>
+                <p>Intravenous (IV) fluid therapy requires highly precise regulation to prevent fluid overload, which can lead to pulmonary edema, or under-dosing, which can delay critical treatment. The IV drip rate calculator determines the exact number of drops per minute required to administer a specific volume of IV fluid over a prescribed time period.</p>
+                <p>This aspect of medical math relies heavily on understanding the "drop factor" of the specific IV tubing set being utilized. Tubing sets are broadly categorized into two types:</p>
+                <ul>
+                    <li><strong>Macrodrip Tubing (10, 15, or 20 gtt/mL):</strong> Designed for rapid fluid resuscitation, blood transfusions, and standard adult hydration. It delivers large drops.</li>
+                    <li><strong>Microdrip Tubing (60 gtt/mL):</strong> Designed for highly precise, slow administration. It delivers tiny drops and is standard protocol for pediatric dosing, neonatal intensive care (NICU), and the administration of potent vasoactive medications where exact volume control is critical.</li>
+                </ul>
+
+                <h2>Weight-Based Dosing & Pediatric Med Math</h2>
+                <p>Unlike standard adult dosing, which often relies on fixed flat doses, pediatric pharmacology and the administration of highly toxic adult medications (like narrow-therapeutic-index drugs) require dosages tailored to the patient's exact body metric. Our weight-based dosing calculator instantly translates a prescribed milligram per kilogram (mg/kg) order into a total required dosage, supporting both imperial (lbs) and metric (kg) patient weights.</p>
+                <p>Additionally, for drugs that require extreme precision, our <strong>BSA (Body Surface Area) Calculator</strong> is available. BSA provides a more accurate reflection of metabolic mass than body weight alone. It is universally used in oncology for chemotherapy dosing and in specialized pediatric pharmacology. Our tool utilizes the globally accepted Mosteller formula: <em>√((Height in cm × Weight in kg) / 3600)</em>.</p>
+            </div>
+
+            <!-- FAQ Section with Schema Markup (Boosts SEO) -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8 mb-8">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">Frequently Asked Questions (Med Math FAQ)</h2>
+                <div class="space-y-6">
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-800">How do you calculate peptide reconstitution accurately?</h3>
+                        <p class="text-gray-600 mt-2">To calculate peptide reconstitution manually, you divide the total micrograms (mcg) of the peptide powder by the volume of bacteriostatic water added to the vial. This provides the concentration per mL. You then divide your desired dose by this concentration to find the volume to draw into the syringe. Our calculator automates this entire equation to eliminate human error.</p>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-800">How does the visual syringe guide improve clinical safety?</h3>
+                        <p class="text-gray-600 mt-2">The built-in logic analyzes your final liquid volume calculation after reconstitution. Based on standard clinical practices, it maps your required dose onto a visual representation of a syringe. If a calculated volume is unusually large for your selected syringe (for example, attempting to draw 1.2mL into a 1.0mL insulin syringe), the system visually flags it as an over-capacity risk with a red warning box.</p>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-800">Does this clinical dose calculator store Personal Health Information (PHI)?</h3>
+                        <p class="text-gray-600 mt-2">Absolutely not. This application runs entirely within your local web browser using client-side JavaScript execution. No patient weights, specific peptide doses, heights, or IV calculations are ever transmitted to an external server. Once you close your browser tab or refresh the page, all entered mathematical data is instantly and permanently erased, ensuring complete privacy and HIPAA compliance.</p>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-800">What is the standard formula for calculating IV drip rates?</h3>
+                        <p class="text-gray-600 mt-2">The universal formula for calculating IV drip rates is: <strong>(Total Volume in mL × Drop Factor) / Total Time in Minutes = Drops per minute (gtt/min)</strong>. It is essential to double-check the packaging of your IV administration set to confirm the correct drop factor before calculating.</p>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-800">Why is Body Surface Area (BSA) preferred over weight-based dosing for certain medications?</h3>
+                        <p class="text-gray-600 mt-2">Body Surface Area is considered a more accurate indicator of a patient's metabolic mass, cardiac output, and renal function than total body weight, which can be skewed by excessive adipose (fat) tissue. This makes BSA calculations critical for drugs with a narrow therapeutic index, such as antineoplastic (chemotherapy) agents, where under-dosing is ineffective and over-dosing is highly toxic.</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ========================================== -->
+        <!-- VIRTUAL PAGES (ABOUT, PRIVACY, TERMS)      -->
+        <!-- ========================================== -->
+        
+        <!-- ABOUT US -->
+        <div id="page-about" class="page-view hidden fade-in bg-white rounded-xl shadow-sm border border-gray-100 p-8 md:p-12">
+            <h1 class="text-3xl font-bold text-gray-900 mb-6">About ClinicalDoseCalculator.com</h1>
+            <div class="prose max-w-none text-gray-600 space-y-4">
+                <p>ClinicalDoseCalculator.com was founded on a simple premise: individuals and healthcare professionals require flawless accuracy when performing complex calculations for peptides, IVs, and weight-based medications.</p>
+                <p>Whether you are calculating a precise peptide reconstitution, programming an IV drip rate in a clinical setting, or determining the correct syringe size, our tools are designed to provide instantaneous, safe, and visually guided results.</p>
+                <p>Built for clarity and safety, our suite of medical math tools is and will remain free to use for researchers, nursing students, and pharmacology professionals across the globe.</p>
+                <p class="mt-8 font-medium">For inquiries, partnership opportunities, or feedback, you can reach us directly at: 
+                    <!-- Obfuscated Email Link -->
+                    <a href="#" class="protected-email text-blue-600 hover:underline" data-u="anything.distant537" data-d="8alias.com">Loading email...</a>
+                </p>
+            </div>
+        </div>
+
+        <!-- PRIVACY POLICY -->
+        <div id="page-privacy" class="page-view hidden fade-in bg-white rounded-xl shadow-sm border border-gray-100 p-8 md:p-12">
+            <h1 class="text-3xl font-bold text-gray-900 mb-6">Privacy Policy</h1>
+            <p class="text-sm text-gray-500 mb-6">Last Updated: September 2026</p>
+            <div class="prose max-w-none text-gray-600 space-y-6">
+                <p>At ClinicalDoseCalculator.com, one of our main priorities is the privacy of our visitors. This Privacy Policy document contains types of information that is collected and recorded by us and how we use it.</p>
+                
+                <h3 class="text-xl font-semibold text-gray-800">1. No Patient or Personal Data Collection</h3>
+                <p>Our calculators are designed to run entirely client-side (within your web browser). <strong>We do not collect, transmit, or store any Personal Health Information (PHI)</strong>, patient data, weights, heights, or specific medication dosages entered into the calculators. Once you close your browser or refresh the page, all entered data is instantly erased.</p>
+                
+                <h3 class="text-xl font-semibold text-gray-800">2. Log Files and Analytics</h3>
+                <p>We may follow a standard procedure of using log files. The information collected includes internet protocol (IP) addresses, browser type, and time stamps. These are not linked to any information that is personally identifiable. The purpose of the information is for analyzing trends and administering the site.</p>
+                
+                <h3 class="text-xl font-semibold text-gray-800">3. Cookies and Google AdSense</h3>
+                <p>Like any other website, ClinicalDoseCalculator.com uses 'cookies'. We partner with third-party ad networks, specifically Google AdSense, which uses cookies (such as the DoubleClick cookie) to serve ads based on a user's prior visits to this website or other websites on the internet. Users may opt out of personalized advertising by visiting Google Ads Settings.</p>
+                
+                <h3 class="text-xl font-semibold text-gray-800">4. Contact Us</h3>
+                <p>If you have additional questions or require more information about our Privacy Policy, contact us at:
+                    <!-- Obfuscated Email Link -->
+                    <a href="#" class="protected-email text-blue-600 hover:underline" data-u="anything.distant537" data-d="8alias.com">Loading email...</a>.
+                </p>
+            </div>
+        </div>
+
+        <!-- TERMS OF SERVICE -->
+        <div id="page-terms" class="page-view hidden fade-in bg-white rounded-xl shadow-sm border border-gray-100 p-8 md:p-12">
+            <h1 class="text-3xl font-bold text-gray-900 mb-6">Terms of Service</h1>
+            <p class="text-sm text-gray-500 mb-6">Last Updated: September 2026</p>
+            <div class="prose max-w-none text-gray-600 space-y-6">
+                <h3 class="text-xl font-semibold text-gray-800">1. Acceptance of Terms</h3>
+                <p>By accessing and using ClinicalDoseCalculator.com, you accept and agree to be bound by the terms and provision of this agreement.</p>
+                
+                <h3 class="text-xl font-semibold text-gray-800">2. Medical Disclaimer (Strict Liability Limitation)</h3>
+                <p><strong>ClinicalDoseCalculator.com is intended strictly for educational, informational, and reference purposes.</strong> It is not a substitute for professional medical advice, diagnosis, or treatment. Healthcare providers, researchers, and individuals should exercise their own independent clinical judgment when using this tool.</p>
+                <p>While we strive for 100% mathematical accuracy based on standard medical formulas, we make no warranties regarding the accuracy, completeness, or reliability of the results. <strong>You agree that ClinicalDoseCalculator.com, its creators, and its hosting providers shall not be held liable for any damages, adverse outcomes, or legal repercussions resulting from the use or misuse of calculations generated by this website.</strong> Always manually verify medical mathematics prior to administration.</p>
+            </div>
+        </div>
+
+        <!-- CONTACT -->
+        <div id="page-contact" class="page-view hidden fade-in bg-white rounded-xl shadow-sm border border-gray-100 p-8 md:p-12 max-w-2xl mx-auto mt-8">
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-100 text-blue-600 mb-4">
+                    <i class="fa-solid fa-envelope text-2xl"></i>
+                </div>
+                <h1 class="text-3xl font-bold text-gray-900 mb-2">Contact Us</h1>
+                <p class="text-gray-600">Have a question, feature request, or spotted a bug? We would love to hear from you.</p>
+            </div>
+            
+            <div class="bg-gray-50 rounded-lg p-6 border border-gray-200 text-center">
+                <p class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-2">Direct Email Inquiry</p>
+                <!-- Obfuscated Email Link (Large Format) -->
+                <a href="#" class="protected-email text-xl font-bold text-blue-600 hover:text-blue-800 transition-colors break-all" data-u="anything.distant537" data-d="8alias.com">
+                    Reveal Email Address
+                </a>
+                <p class="text-sm text-gray-500 mt-4">We aim to respond to all inquiries within 48-72 business hours.</p>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- AdSense Compliant Footer Navigation -->
+    <footer class="bg-white border-t border-gray-200 mt-auto">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8 text-center md:text-left">
+                <div>
+                    <!-- Updated Footer Heading -->
+                    <span class="font-bold text-lg text-gray-900 tracking-tight flex flex-wrap justify-center md:justify-start">ClinicalDose<span class="text-blue-600">Calculator</span></span>
+                    <p class="text-sm text-gray-500 mt-2">Free, instantaneous clinical calculations and visual syringe safety guides for modern healthcare.</p>
+                </div>
+                <div>
+                    <h4 class="font-bold text-gray-900 mb-3">Calculators</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><button onclick="showPage('page-home'); switchTab('recon-tab');" class="text-gray-600 hover:text-blue-600 transition-colors">Peptides & Reconstitution</button></li>
+                        <li><button onclick="showPage('page-home'); switchTab('iv-tab');" class="text-gray-600 hover:text-blue-600 transition-colors">IV Drip Rate Calculator</button></li>
+                        <li><button onclick="showPage('page-home'); switchTab('weight-tab');" class="text-gray-600 hover:text-blue-600 transition-colors">Weight-Based Dosing</button></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-gray-900 mb-3">Legal & Company</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><button onclick="showPage('page-about')" class="text-gray-600 hover:text-blue-600 transition-colors">About Us</button></li>
+                        <li><button onclick="showPage('page-contact')" class="text-gray-600 hover:text-blue-600 transition-colors">Contact</button></li>
+                        <li><button onclick="showPage('page-privacy')" class="text-gray-600 hover:text-blue-600 transition-colors">Privacy Policy</button></li>
+                        <li><button onclick="showPage('page-terms')" class="text-gray-600 hover:text-blue-600 transition-colors">Terms of Service</button></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-200 pt-6 text-center text-sm text-gray-400 flex flex-col md:flex-row justify-between items-center">
+                <p>&copy; 2026 ClinicalDoseCalculator.com. All rights reserved.</p>
+                <p class="mt-2 md:mt-0">For Educational Purposes Only.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Anti-Spam Email Obfuscation
+        window.addEventListener('DOMContentLoaded', () => {
+            const emails = document.querySelectorAll('.protected-email');
+            emails.forEach(el => {
+                const u = el.getAttribute('data-u');
+                const d = el.getAttribute('data-d');
+                const fullEmail = u + '@' + d;
+                el.href = 'mailto:' + fullEmail;
+                el.innerText = fullEmail;
+                
+                // Remove data attributes so bots can't easily read them after JS execution
+                el.removeAttribute('data-u');
+                el.removeAttribute('data-d');
+            });
+            
+            // Check hash on load to show correct virtual page
+            checkHashAndRoute();
+        });
+        
+        // Handle browser back/forward buttons
+        window.addEventListener('hashchange', checkHashAndRoute);
+
+        // Advanced SPA Routing for AdSense Compliance
+        function checkHashAndRoute() {
+            const hash = window.location.hash.substring(1);
+            if (hash === 'about') showPageContent('page-about');
+            else if (hash === 'privacy') showPageContent('page-privacy');
+            else if (hash === 'terms') showPageContent('page-terms');
+            else if (hash === 'contact') showPageContent('page-contact');
+            else showPageContent('page-home');
+        }
+
+        // Wrapper function to update URL and trigger view change
+        function showPage(pageId) {
+            const hashMap = {
+                'page-home': '',
+                'page-about': 'about',
+                'page-privacy': 'privacy',
+                'page-terms': 'terms',
+                'page-contact': 'contact'
+            };
+            
+            const newHash = hashMap[pageId] || '';
+            
+            // If already on the page, just scroll up. Otherwise, change hash (which triggers view change)
+            if (window.location.hash.substring(1) === newHash) {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else {
+                window.location.hash = newHash;
+            }
+        }
+
+        // The actual DOM manipulation function
+        function showPageContent(pageId) {
+            const pages = document.querySelectorAll('.page-view');
+            pages.forEach(page => {
+                page.classList.add('hidden');
+                page.classList.remove('block');
+            });
+            
+            const targetPage = document.getElementById(pageId) || document.getElementById('page-home');
+            targetPage.classList.remove('hidden');
+            targetPage.classList.add('block');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Calculator Tab Switching Logic
+        function switchTab(tabId) {
+            const tabs = document.querySelectorAll('.calc-tab');
+            tabs.forEach(tab => {
+                tab.classList.add('hidden');
+                tab.classList.remove('block');
+            });
+            
+            const tabBtns = ['btn-recon-tab', 'btn-iv-tab', 'btn-weight-tab', 'btn-bsa-tab'];
+            tabBtns.forEach(id => {
+                const el = document.getElementById(id);
+                if(el) {
+                    el.classList.remove('tab-active');
+                    el.classList.remove('text-blue-600');
+                    el.classList.add('tab-inactive');
+                }
+            });
+            
+            document.getElementById('content-' + tabId).classList.remove('hidden');
+            document.getElementById('content-' + tabId).classList.add('block');
+            
+            const activeBtn = document.getElementById('btn-' + tabId);
+            activeBtn.classList.remove('tab-inactive');
+            activeBtn.classList.add('tab-active');
+            activeBtn.classList.add('text-blue-600');
+        }
+
+        // Helper Function: Smart Syringe Safety Logic
+        function updateSyringeSafety(volume, containerId, iconId, textId, maxCapacity) {
+            const container = document.getElementById(containerId);
+            const icon = document.getElementById(iconId);
+            const text = document.getElementById(textId);
+            
+            if (isNaN(volume) || volume <= 0) {
+                container.className = "bg-gray-50 border border-gray-200 p-4 rounded-xl flex items-start gap-3 transition-colors duration-300 mt-2";
+                icon.innerHTML = '<i class="fa-solid fa-circle-info"></i>';
+                icon.className = "text-gray-400 mt-0.5 text-lg";
+                text.innerText = "Enter values to validate your dose and syringe capacity.";
+                return;
+            }
+
+            if (volume > maxCapacity) {
+                container.className = "bg-red-50 border border-red-200 p-4 rounded-xl flex items-start gap-3 transition-colors duration-300 mt-2";
+                icon.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i>';
+                icon.className = "text-red-500 mt-0.5 text-lg";
+                text.innerHTML = `<strong>Over Capacity:</strong> Volume (${volume.toFixed(2)}mL) exceeds the selected ${maxCapacity}mL syringe capacity.`;
+            } else if (volume <= maxCapacity * 0.1) {
+                container.className = "bg-amber-50 border border-amber-200 p-4 rounded-xl flex items-start gap-3 transition-colors duration-300 mt-2";
+                icon.innerHTML = '<i class="fa-solid fa-eye-dropper"></i>';
+                icon.className = "text-amber-500 mt-0.5 text-lg";
+                text.innerHTML = `Volume is very low. Ensure accurate measurement or consider a smaller syringe.`;
+            } else {
+                container.className = "bg-green-50 border border-green-200 p-4 rounded-xl flex items-start gap-3 transition-colors duration-300 mt-2";
+                icon.innerHTML = '<i class="fa-solid fa-check-circle"></i>';
+                icon.className = "text-green-500 mt-0.5 text-lg";
+                text.innerHTML = `Calculated volume is safe to draw in the selected ${maxCapacity}mL syringe.`;
+            }
+        }
+        
+        function renderSyringeMarks(syringeSize) {
+            const marksContainer = document.getElementById('syringe-marks');
+            marksContainer.innerHTML = '';
+            
+            let numMajorTicks = 10; 
+            let labelMultiplier = 10;
+            
+            if (syringeSize === 1) {
+                numMajorTicks = 10; 
+                labelMultiplier = 10; 
+            } else if (syringeSize === 0.5) {
+                numMajorTicks = 5;  
+                labelMultiplier = 10; 
+            } else if (syringeSize === 0.3) {
+                numMajorTicks = 3;  
+                labelMultiplier = 10; 
+            } else if (syringeSize === 3) {
+                numMajorTicks = 6; 
+                labelMultiplier = 0.5; 
+            }
+
+            document.getElementById('syringe-label-cap').innerText = `${syringeSize} mL Capacity`;
+
+            for(let i=1; i<=numMajorTicks; i++) {
+                let percent = (i / numMajorTicks) * 100;
+                let label = (syringeSize <= 1) ? (i * labelMultiplier) : (i * labelMultiplier).toFixed(1);
+                
+                marksContainer.innerHTML += `
+                    <div class="absolute h-full flex flex-col justify-between items-center" style="left: ${percent}%; transform: translateX(-50%);">
+                        <div class="h-1/3 w-px bg-gray-400"></div>
+                        <div class="text-[9px] font-bold text-gray-500 bg-white/70 px-[2px] rounded-sm leading-none">${label}</div>
+                        <div class="h-1/3 w-px bg-gray-400"></div>
+                    </div>
+                `;
+            }
+        }
+
+        // 1. Peptide & Reconstitution Calculation
+        function calculateRecon() {
+            const powderAmt = parseFloat(document.getElementById('recon-powder').value);
+            const powderUnit = document.getElementById('recon-powder-unit').value;
+            const diluent = parseFloat(document.getElementById('recon-diluent').value);
+            const doseAmt = parseFloat(document.getElementById('recon-dose').value);
+            const doseUnit = document.getElementById('recon-dose-unit').value;
+            const syringeSize = parseFloat(document.getElementById('recon-syringe').value);
+            
+            const resultEl = document.getElementById('recon-draw-result');
+            const unitsEl = document.getElementById('recon-units-result');
+            
+            renderSyringeMarks(syringeSize);
+
+            if (isNaN(powderAmt) || isNaN(diluent) || isNaN(doseAmt) || powderAmt <= 0 || diluent <= 0 || doseAmt <= 0) {
+                resultEl.innerText = "0.00";
+                unitsEl.classList.add('hidden');
+                document.getElementById('syringe-liquid').style.width = '0%';
+                document.getElementById('syringe-marker').style.left = '0%';
+                document.getElementById('syringe-marker-text').innerText = '0 mL';
+                updateSyringeSafety(0, 'recon-safety-box', 'recon-safety-icon', 'recon-safety-text', syringeSize);
+                return;
+            }
+
+            let powderInMcg = powderUnit === 'mg' ? powderAmt * 1000 : powderAmt;
+            let doseInMcg = doseUnit === 'mg' ? doseAmt * 1000 : doseAmt;
+
+            const concentration = powderInMcg / diluent;
+            const volumeToDraw = doseInMcg / concentration;
+            resultEl.innerText = volumeToDraw.toFixed(2);
+            
+            if (syringeSize <= 1) {
+                const units = Math.round(volumeToDraw * 100);
+                unitsEl.innerText = `${units} Units`;
+                unitsEl.classList.remove('hidden');
+                document.getElementById('syringe-marker-text').innerText = `${units} Units`;
+            } else {
+                unitsEl.classList.add('hidden');
+                document.getElementById('syringe-marker-text').innerText = `${volumeToDraw.toFixed(2)} mL`;
+            }
+            
+            let fillPercentage = (volumeToDraw / syringeSize) * 100;
+            let visualPercentage = Math.min(fillPercentage, 100); 
+            
+            const liquidEl = document.getElementById('syringe-liquid');
+            if (fillPercentage > 100) {
+                liquidEl.classList.remove('from-blue-400', 'to-blue-500');
+                liquidEl.classList.add('from-red-400', 'to-red-500');
+            } else {
+                liquidEl.classList.remove('from-red-400', 'to-red-500');
+                liquidEl.classList.add('from-blue-400', 'to-blue-500');
+            }
+
+            liquidEl.style.width = `${visualPercentage}%`;
+            document.getElementById('syringe-marker').style.left = `${visualPercentage}%`;
+            
+            updateSyringeSafety(volumeToDraw, 'recon-safety-box', 'recon-safety-icon', 'recon-safety-text', syringeSize);
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            renderSyringeMarks(parseFloat(document.getElementById('recon-syringe').value));
+        });
+
+        // 2. IV Drip Rate Calculation
+        function calculateIV() {
+            const volume = parseFloat(document.getElementById('iv-volume').value);
+            const time = parseFloat(document.getElementById('iv-time').value);
+            const timeUnit = document.getElementById('iv-time-unit').value;
+            const dropFactor = parseFloat(document.getElementById('iv-drop-factor').value);
+            const resultEl = document.getElementById('iv-result');
+
+            if (isNaN(volume) || isNaN(time) || time <= 0) {
+                resultEl.innerText = "0";
+                return;
+            }
+
+            const timeInMinutes = timeUnit === 'hours' ? time * 60 : time;
+            const flowRate = (volume * dropFactor) / timeInMinutes;
+            resultEl.innerText = Math.round(flowRate);
+        }
+
+        // 3. Weight-Based Dosing Calculation
+        function calculateWeightBased() {
+            let weight = parseFloat(document.getElementById('wb-weight').value);
+            const weightUnit = document.getElementById('wb-weight-unit').value;
+            const dose = parseFloat(document.getElementById('wb-dose').value);
+            const concentration = parseFloat(document.getElementById('wb-concentration').value);
+            
+            const doseResultEl = document.getElementById('wb-dose-result');
+            const volResultEl = document.getElementById('wb-vol-result');
+            const volContainer = document.getElementById('wb-vol-container');
+
+            if (isNaN(weight) || isNaN(dose) || weight <= 0) {
+                doseResultEl.innerText = "0.00";
+                volResultEl.innerText = "-";
+                volContainer.className = "bg-purple-50 p-6 rounded-xl border border-purple-100 text-center flex-1 flex flex-col justify-center transition-all duration-300 relative overflow-hidden";
+                return;
+            }
+
+            if (weightUnit === 'lbs') { weight = weight * 0.453592; }
+            const totalDose = weight * dose;
+            doseResultEl.innerText = Number(totalDose.toFixed(2));
+
+            if (!isNaN(concentration) && concentration > 0) {
+                const volume = totalDose / concentration;
+                volResultEl.innerText = Number(volume.toFixed(2));
+                
+                if(volume > 10) {
+                    volContainer.className = "bg-red-50 p-6 rounded-xl border border-red-300 text-center flex-1 flex flex-col justify-center transition-all duration-300 relative overflow-hidden";
+                } else {
+                    volContainer.className = "bg-purple-50 p-6 rounded-xl border border-purple-100 text-center flex-1 flex flex-col justify-center transition-all duration-300 relative overflow-hidden";
+                }
+            } else {
+                volResultEl.innerText = "-";
+                volContainer.className = "bg-purple-50 p-6 rounded-xl border border-purple-100 text-center flex-1 flex flex-col justify-center transition-all duration-300 relative overflow-hidden";
+            }
+        }
+
+        // 4. BSA Calculation (Mosteller Formula)
+        function calculateBSA() {
+            let height = parseFloat(document.getElementById('bsa-height').value);
+            const heightUnit = document.getElementById('bsa-height-unit').value;
+            let weight = parseFloat(document.getElementById('bsa-weight').value);
+            const weightUnit = document.getElementById('bsa-weight-unit').value;
+            
+            const resultEl = document.getElementById('bsa-result');
+
+            if (isNaN(height) || isNaN(weight) || height <= 0 || weight <= 0) {
+                resultEl.innerText = "0.00";
+                return;
+            }
+
+            if (heightUnit === 'in') { height = height * 2.54; }
+            if (weightUnit === 'lbs') { weight = weight * 0.453592; }
+
+            const bsa = Math.sqrt((height * weight) / 3600);
+            resultEl.innerText = bsa.toFixed(2);
+        }
+    </script>
+</body>
+</html>
+```
